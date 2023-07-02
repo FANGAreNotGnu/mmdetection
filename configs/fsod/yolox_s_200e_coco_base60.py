@@ -39,7 +39,7 @@ model = dict(
         act_cfg=dict(type='Swish')),
     bbox_head=dict(
         type='YOLOXHead',
-        num_classes=80,
+        num_classes=60,  # TODO: change this in configs for novel train
         in_channels=128,
         feat_channels=128,
         stacked_convs=2,
@@ -124,8 +124,8 @@ train_dataset = dict(
     dataset=dict(
         type=dataset_type,
         data_root=data_root,
-        ann_file='annotations/instances_train2017_base60.json',
-        data_prefix=dict(img='train2017/'),
+        ann_file='annotations/instances_train2017_base.json',  # TODO: may need to change this in other configs
+        data_prefix=dict(img='train2017/'),  # TODO: may need to change this in other configs
         pipeline=[
             dict(type='LoadImageFromFile', backend_args=backend_args),
             dict(type='LoadAnnotations', with_bbox=True)
@@ -163,8 +163,8 @@ val_dataloader = dict(
     dataset=dict(
         type=dataset_type,
         data_root=data_root,
-        ann_file='annotations/instances_val2017_base60.json',
-        data_prefix=dict(img='val2017/'),
+        ann_file='annotations/instances_val2017_base.json',  # TODO: may need to change this in other configs
+        data_prefix=dict(img='val2017/'),  # TODO: may need to change this in other configs
         test_mode=True,
         pipeline=test_pipeline,
         backend_args=backend_args))
@@ -172,14 +172,14 @@ test_dataloader = val_dataloader
 
 val_evaluator = dict(
     type='CocoMetric',
-    ann_file=data_root + 'annotations/instances_val2017_base60.json',
+    ann_file=data_root + 'annotations/instances_val2017_base.json',  # TODO: may need to change this in other configs
     metric='bbox',
     backend_args=backend_args)
 test_evaluator = val_evaluator
 
 # training settings
-max_epochs = 300
-num_last_epochs = 15
+max_epochs = 200
+num_last_epochs = 10
 interval = 10
 
 train_cfg = dict(max_epochs=max_epochs, val_interval=interval)
@@ -248,3 +248,6 @@ custom_hooks = [
 # USER SHOULD NOT CHANGE ITS VALUES.
 # base_batch_size = (8 GPUs) x (8 samples per GPU)
 auto_scale_lr = dict(base_batch_size=64)
+
+
+# bash tools/dist_train.sh configs/fsod/yolox_s_200e_coco_base60.py 3 --auto-scale-lr
