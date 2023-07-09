@@ -65,7 +65,7 @@ model = dict(
     # 0.01, and the threshold of the test phase is 0.001.
     test_cfg=dict(score_thr=0.01, nms=dict(type='nms', iou_threshold=0.65)))
 
-data_root = '/media/data/coco17/coco/'
+data_root = '/media/data/coco_fsod/'
 dataset_type = 'CocoDataset'
 
 train_dataset = dict(
@@ -95,7 +95,7 @@ test_evaluator = val_evaluator
 # training settings
 max_epochs = 100
 num_last_epochs = 10
-interval = 5
+interval = 100
 
 train_cfg = dict(max_epochs=max_epochs, val_interval=interval)
 
@@ -169,5 +169,5 @@ auto_scale_lr = dict(base_batch_size=64)
 
 load_from = '/home/ubuntu/mmdetection/work_dirs/yolox_s_200e_coco_base60/epoch_200.pth'
 
-# CUDA_VISIBLE_DEVICES=3 python3 tools/train.py configs/fsod/yolox_s_50e_coco_10shot.py --auto-scale-lr
+# CUDA_VISIBLE_DEVICES=6 python3 tools/train.py configs/fsod/yolox_s_100e_coco10_frozen4.py --auto-scale-lr --cfg-options randomness.seed=1
 # bash tools/dist_train.sh configs/fsod/yolox_s_50e_coco_10shot.py 3 --auto-scale-lr
