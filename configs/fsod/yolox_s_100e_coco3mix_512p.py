@@ -1,7 +1,7 @@
-_base_ = './yolox_s_100e_coco1_frozen4.py'
+_base_ = './yolox_s_100e_coco3_frozen4.py'
 
 #train_data_root = '/media/data/dad/cnet/experiments/coco10novel/mix_n2000_o1_s1_p640_pfa_csl_p20_pfb_csl40'  # change this for different synthetic strategy
-train_data_root = "/media/data/dad/cnet/experiments/coco1s1_512p/mix_n100-10_o0_m0_s1_p512_inpaintfixed"
+train_data_root = "/media/data/dad/cnet/experiments/coco3s1_othersize/mix_n30-30_dfsNone_o0_m0_s1_HED_p768_imprior"
 dataset_type = 'CocoDataset'
 
 train_dataset = dict(
@@ -20,7 +20,7 @@ train_dataloader = dict(
     dataset=train_dataset)
 
 # training settings
-max_epochs = 200
+max_epochs = 150
 num_last_epochs = int(0.1 * max_epochs)
 interval = max_epochs
 

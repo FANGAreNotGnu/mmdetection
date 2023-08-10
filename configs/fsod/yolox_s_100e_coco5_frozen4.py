@@ -1,9 +1,4 @@
-_base_ = [
-    '../_base_/schedules/schedule_1x.py', '../_base_/default_runtime.py',
-    '../yolox/yolox_tta.py'
-]
-
-img_scale = (640, 640)  # width, height
+_base_ = './yolox_s_200e_coco_base60.py'
 
 # model settings
 model = dict(
@@ -27,6 +22,7 @@ model = dict(
         spp_kernal_sizes=(5, 9, 13),
         norm_cfg=dict(type='BN', momentum=0.03, eps=0.001),
         act_cfg=dict(type='Swish'),
+        frozen_stages=4,  # TODO
     ),
     neck=dict(
         type='YOLOXPAFPN',
@@ -39,7 +35,7 @@ model = dict(
         act_cfg=dict(type='Swish')),
     bbox_head=dict(
         type='YOLOXHead',
-        num_classes=60,  # TODO: change this in configs for novel train
+        num_classes=20,  # TODO: change this in configs for novel train
         in_channels=128,
         feat_channels=128,
         stacked_convs=2,
@@ -69,86 +65,14 @@ model = dict(
     # 0.01, and the threshold of the test phase is 0.001.
     test_cfg=dict(score_thr=0.01, nms=dict(type='nms', iou_threshold=0.65)))
 
-# dataset settings
 data_root = '/media/data/coco_fsod/'
 dataset_type = 'CocoDataset'
 
-# Example to use different file client
-# Method 1: simply set the data root and let the file I/O module
-# automatically infer from prefix (not support LMDB and Memcache yet)
-
-# data_root = 's3://openmmlab/datasets/detection/coco/'
-
-# Method 2: Use `backend_args`, `file_client_args` in versions before 3.0.0rc6
-# backend_args = dict(
-#     backend='petrel',
-#     path_mapping=dict({
-#         './data/': 's3://openmmlab/datasets/detection/',
-#         'data/': 's3://openmmlab/datasets/detection/'
-#     }))
-backend_args = None
-
-mosaic_prob = 1  # TODO
-
-train_pipeline = [
-    dict(type='Mosaic', img_scale=img_scale, pad_val=114.0, prob=mosaic_prob),
-    dict(
-        type='RandomAffine',
-        scaling_ratio_range=(0.1, 2),
-        # img_scale is (width, height)
-        border=(-img_scale[0] // 2, -img_scale[1] // 2)),
-    dict(
-        type='MixUp',
-        img_scale=img_scale,
-        ratio_range=(0.8, 1.6),
-        pad_val=114.0),
-    dict(type='YOLOXHSVRandomAug'),
-    dict(type='RandomFlip', prob=0.5),
-    # According to the official implementation, multi-scale
-    # training is not considered here but in the
-    # 'mmdet/models/detectors/yolox.py'.
-    # Resize and Pad are for the last 15 epochs when Mosaic,
-    # RandomAffine, and MixUp are closed by YOLOXModeSwitchHook.
-    dict(type='Resize', scale=img_scale, keep_ratio=True),
-    dict(
-        type='Pad',
-        pad_to_square=True,
-        # If the image is three-channel, the pad value needs
-        # to be set separately for each channel.
-        pad_val=dict(img=(114.0, 114.0, 114.0))),
-    dict(type='FilterAnnotations', min_gt_bbox_wh=(1, 1), keep_empty=False),
-    dict(type='PackDetInputs')
-]
-
 train_dataset = dict(
-    # use MultiImageMixDataset wrapper to support mosaic and mixup
-    type='MultiImageMixDataset',
     dataset=dict(
-        type=dataset_type,
-        data_root=data_root,
-        ann_file='annotations/instances_train2017_base.json',  # TODO: may need to change this in other configs
-        data_prefix=dict(img='train2017/'),  # TODO: may need to change this in other configs
-        pipeline=[
-            dict(type='LoadImageFromFile', backend_args=backend_args),
-            dict(type='LoadAnnotations', with_bbox=True)
-        ],
-        filter_cfg=dict(filter_empty_gt=False, min_size=32),
-        backend_args=backend_args),
-    pipeline=train_pipeline)
-
-test_pipeline = [
-    dict(type='LoadImageFromFile', backend_args=backend_args),
-    dict(type='Resize', scale=img_scale, keep_ratio=True),
-    dict(
-        type='Pad',
-        pad_to_square=True,
-        pad_val=dict(img=(114.0, 114.0, 114.0))),
-    dict(type='LoadAnnotations', with_bbox=True),
-    dict(
-        type='PackDetInputs',
-        meta_keys=('img_id', 'img_path', 'ori_shape', 'img_shape',
-                   'scale_factor'))
-]
+        ann_file='seed1/5shot_novel.json',  # TODO
+        )
+    )
 
 train_dataloader = dict(
     batch_size=16,
@@ -157,43 +81,34 @@ train_dataloader = dict(
     sampler=dict(type='DefaultSampler', shuffle=True),
     dataset=train_dataset)
 val_dataloader = dict(
-    batch_size=16,
-    num_workers=4,
-    persistent_workers=True,
-    drop_last=False,
-    sampler=dict(type='DefaultSampler', shuffle=False),
     dataset=dict(
-        type=dataset_type,
-        data_root=data_root,
-        ann_file='annotations/instances_val2017_base.json',  # TODO: may need to change this in other configs
-        data_prefix=dict(img='val2017/'),  # TODO: may need to change this in other configs
-        test_mode=True,
-        pipeline=test_pipeline,
-        backend_args=backend_args))
+        ann_file='annotations/instances_val2017_novel.json',  # TODO
+        )
+    )
 test_dataloader = val_dataloader
 
 val_evaluator = dict(
-    type='CocoMetric',
-    ann_file=data_root + 'annotations/instances_val2017_base.json',  # TODO: may need to change this in other configs
-    metric='bbox',
-    backend_args=backend_args)
+    ann_file=data_root + 'annotations/instances_val2017_novel.json',  # TODO
+    )
 test_evaluator = val_evaluator
 
 # training settings
-max_epochs = 200
-num_last_epochs = 10
-interval = 10
+max_epochs = 100
+num_last_epochs = int(0.1 * max_epochs)
+interval = max_epochs
 
 train_cfg = dict(max_epochs=max_epochs, val_interval=interval)
 
 # optimizer
 # default 8 gpu
-base_lr = 0.01
+base_lr = 0.005
+#weight_decay = 0.001
 optim_wrapper = dict(
     type='OptimWrapper',
     optimizer=dict(
         type='SGD', lr=base_lr, momentum=0.9, weight_decay=5e-4,
         nesterov=True),
+        #_delete_=True, type='AdamW', lr=base_lr, weight_decay=weight_decay),
     paramwise_cfg=dict(norm_decay_mult=0., bias_decay_mult=0.))
 
 # learning rate
@@ -252,4 +167,7 @@ custom_hooks = [
 auto_scale_lr = dict(base_batch_size=64)
 
 
-# bash tools/dist_train.sh configs/fsod/yolox_s_200e_coco_base60.py 3 --auto-scale-lr
+load_from = '/home/ubuntu/mmdetection/work_dirs/yolox_s_200e_coco_base60/epoch_200.pth'
+
+# CUDA_VISIBLE_DEVICES=6 python3 tools/train.py configs/fsod/yolox_s_100e_coco1_frozen4.py --auto-scale-lr --cfg-options randomness.seed=1
+# bash tools/dist_train.sh configs/fsod/yolox_s_50e_coco_10shot.py 3 --auto-scale-lr

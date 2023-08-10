@@ -170,5 +170,5 @@ auto_scale_lr = dict(base_batch_size=64)
 
 load_from = '/home/ubuntu/mmdetection/work_dirs/yolox_s_200e_coco_base60/epoch_200.pth'
 
-# CUDA_VISIBLE_DEVICES=6 python3 tools/train.py configs/fsod/yolox_s_100e_coco10_frozen4.py --auto-scale-lr --cfg-options randomness.seed=1 test_evaluator.classwise=True
+# CUDA_VISIBLE_DEVICES=5 python3 tools/train.py configs/fsod/yolox_s_100e_coco10_frozen4.py --auto-scale-lr --cfg-options randomness.seed=1 test_evaluator.classwise=True
 # bash tools/dist_train.sh configs/fsod/yolox_s_50e_coco_10shot.py 3 --auto-scale-lr

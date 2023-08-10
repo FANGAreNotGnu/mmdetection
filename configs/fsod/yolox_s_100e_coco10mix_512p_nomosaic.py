@@ -1,7 +1,7 @@
-_base_ = './yolox_s_100e_coco1_frozen4.py'
+_base_ = './yolox_s_100e_coco10mix_512p.py'
 
-#train_data_root = '/media/data/dad/cnet/experiments/coco10novel/mix_n2000_o1_s1_p640_pfa_csl_p20_pfb_csl40'  # change this for different synthetic strategy
-train_data_root = "/media/data/dad/cnet/experiments/coco1s1_512p/mix_n100-10_o0_m0_s1_p512_inpaintfixed"
+
+train_data_root = "/media/data/dad/cnet/experiments/coco10s1_512p/mix_n1000-100_dfsNone_o0_m0_s1_HED_p512_imprior"
 dataset_type = 'CocoDataset'
 
 train_dataset = dict(
@@ -19,10 +19,11 @@ train_dataloader = dict(
     sampler=dict(type='DefaultSampler', shuffle=True),
     dataset=train_dataset)
 
+
 # training settings
-max_epochs = 200
-num_last_epochs = int(0.1 * max_epochs)
-interval = max_epochs
+max_epochs = 100
+num_last_epochs = 10
+interval = 100
 
 train_cfg = dict(max_epochs=max_epochs, val_interval=interval)
 
@@ -76,7 +77,7 @@ default_hooks = dict(
 custom_hooks = [
     dict(
         type='YOLOXModeSwitchHook',
-        num_last_epochs=num_last_epochs,
+        num_last_epochs=max_epochs-1,
         priority=48),
     dict(type='SyncNormHook', priority=48),
     dict(
@@ -95,5 +96,5 @@ auto_scale_lr = dict(base_batch_size=64)
 
 load_from = '/home/ubuntu/mmdetection/work_dirs/yolox_s_200e_coco_base60/epoch_200.pth'
 
-# CUDA_VISIBLE_DEVICES=7 python3 tools/train.py configs/fsod/yolox_s_100e_coco1mix_512p.py --auto-scale-lr --cfg-options randomness.seed=1
-# bash tools/dist_train.sh configs/fsod/yolox_s_50e_coco_10shot.py 3 --auto-scale-lr
+# CUDA_VISIBLE_DEVICES=7 python3 tools/train.py configs/fsod/yolox_s_100e_coco10mix_512p.py --auto-scale-lr --cfg-options randomness.seed=1
+# bash tools/dist_train.sh configs/fsod/yolox_s_100e_coco10mix_512p.py 4 --auto-scale-lr --cfg-options randomness.seed=1
