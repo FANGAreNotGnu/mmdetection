@@ -1,7 +1,7 @@
 _base_ = "./dino-5scale_swin-l_36e_coco30_frozen.py"
 
 #train_data_root = '/media/data/dad/cnet/experiments/coco10novel/mix_n2000_o1_s1_p640_pfa_csl_p20_pfb_csl40'  # change this for different synthetic strategy
-train_data_root = "/media/data/dad/cnet/experiments/coco30s1_512p/mix_n2500-600_dfsNone_o0_m0_s1_HED_p512_imprior"
+train_data_root = "/media/data/dad/cnet/experiments/coco30s1_512p/mix_n2500-1000_dfsNone_o0_m0_s1_HED_p512_imprior_avgacsl30"
 dataset_type = 'CocoDataset'
 
 train_pipeline = [
@@ -60,7 +60,7 @@ optim_wrapper = dict(
 )  # custom_keys contains sampling_offsets and reference_points in DeformDETR  # noqa
 
 # learning policy
-max_epochs = 50
+max_epochs = 36
 train_cfg = dict(
     type='EpochBasedTrainLoop', max_epochs=max_epochs, val_interval=max_epochs)
 

@@ -17,23 +17,6 @@ train_pipeline = [
                     type='RandomChoiceResize',
                     scales=[(640, 1333)],
                     keep_ratio=True)
-            ],
-            [
-                dict(
-                    type='RandomChoiceResize',
-                    # The radio of all image in train dataset < 7
-                    # follow the original implement
-                    scales=[(500, 4200)],
-                    keep_ratio=True),
-                dict(
-                    type='RandomCrop',
-                    crop_type='absolute_range',
-                    crop_size=(384, 600),
-                    allow_negative_crop=True),
-                dict(
-                    type='RandomChoiceResize',
-                    scales=[(640, 1333)],
-                    keep_ratio=True)
             ]
         ]),
     dict(type='PackDetInputs')
@@ -42,7 +25,7 @@ train_pipeline = [
 train_dataloader = dict(
     dataset=dict(
         data_root=train_data_root,
-        ann_file='annotation.json',))
+        ann_file='annotation.json', pipeline=train_pipeline))
 
 # optimizer
 optim_wrapper = dict(

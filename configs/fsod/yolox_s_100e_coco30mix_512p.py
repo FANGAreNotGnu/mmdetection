@@ -1,7 +1,7 @@
 _base_ = './yolox_s_100e_coco3_frozen4.py'
 
 #train_data_root = '/media/data/dad/cnet/experiments/coco10novel/mix_n2000_o1_s1_p640_pfa_csl_p20_pfb_csl40'  # change this for different synthetic strategy
-train_data_root = "/media/data/dad/cnet/experiments/coco30s1_512p/mix_n300-300_dfsNone_o0_m0_s1_HED_p512_promptimg_imprior_resizefixed"
+train_data_root = "/media/data/dad/cnet/experiments/coco30s1_512p/mix_n1000-1000_dfsNone_o0_m0_s1_scribble_p512_promptcat_seed1_imprior_avgacsl30"
 dataset_type = 'CocoDataset'
 
 train_dataset = dict(

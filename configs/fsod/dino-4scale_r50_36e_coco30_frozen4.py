@@ -1,15 +1,29 @@
-_base_ = "./dino-5scale_swin-l_36e_coco5_frozen.py"
+_base_ = "./dino-4scale_r50_36e_coco_base60.py"
 
-#train_data_root = '/media/data/dad/cnet/experiments/coco10novel/mix_n2000_o1_s1_p640_pfa_csl_p20_pfb_csl40'  # change this for different synthetic strategy
-train_data_root = "/media/data/dad/cnet/experiments/coco5s1_512p/mix_n167-167_dfsNone_o0_m0_s1_canny_p512_promptand_imprior_avgacsl30"
-dataset_type = 'CocoDataset'
+model = dict(
+    backbone=dict(
+        frozen_stages=4,),  # TODO
+    bbox_head=dict(
+        num_classes=20,  # TODO: change this in configs for novel train
+        ),
+    )
 
+data_root = '/media/data/coco_fsod/'
 train_dataloader = dict(
     dataset=dict(
-        data_root=train_data_root,
-        ann_file='annotation.json',  # TODO
-        data_prefix=dict(img='images/'),  # TODO: may need to change this in other configs
-        ))
+        data_root=data_root, ann_file='seed1/30shot_novel.json', 
+        data_prefix=dict(img='train2017/'),))
+val_dataloader = dict(
+    dataset=dict(
+        data_root=data_root,
+        ann_file='annotations/instances_val2017_novel.json',  # TODO: may need to change this in other configs
+        data_prefix=dict(img='val2017/'),  # TODO: may need to change this in other configs
+    ))
+test_dataloader = val_dataloader
+
+val_evaluator = dict(
+    ann_file=data_root + 'annotations/instances_val2017_novel.json',)
+test_evaluator = val_evaluator
 
 lr = 0.0001
 
@@ -25,7 +39,7 @@ optim_wrapper = dict(
 )  # custom_keys contains sampling_offsets and reference_points in DeformDETR  # noqa
 
 # learning policy
-max_epochs = 100
+max_epochs = 36
 train_cfg = dict(
     type='EpochBasedTrainLoop', max_epochs=max_epochs, val_interval=max_epochs)
 
@@ -49,3 +63,5 @@ auto_scale_lr = dict(base_batch_size=16)
 
 default_hooks = dict(
     checkpoint=dict(type='CheckpointHook', interval=max_epochs),)
+
+load_from = '/home/ubuntu/mmdetection/work_dirs/dino-4scale_r50_36e_coco_base60/epoch_36.pth'

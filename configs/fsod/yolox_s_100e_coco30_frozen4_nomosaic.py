@@ -68,7 +68,6 @@ model = dict(
 data_root = '/media/data/coco_fsod/'
 dataset_type = 'CocoDataset'
 
-
 img_scale = (640, 640) 
 train_pipeline = [
     dict(type='Mosaic', img_scale=img_scale, pad_val=114.0, prob=0),
@@ -102,7 +101,7 @@ train_pipeline = [
 
 train_dataset = dict(
     dataset=dict(
-        ann_file='seed1/5shot_novel.json',  # TODO
+        ann_file='seed1/30shot_novel.json',  # TODO
         ),
     pipeline=train_pipeline,
     )
@@ -126,7 +125,7 @@ val_evaluator = dict(
 test_evaluator = val_evaluator
 
 # training settings
-max_epochs = 100
+max_epochs = 75
 num_last_epochs = int(0.1 * max_epochs)
 interval = max_epochs
 

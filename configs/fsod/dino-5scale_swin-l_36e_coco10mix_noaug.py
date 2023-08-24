@@ -1,7 +1,7 @@
 _base_ = "./dino-5scale_swin-l_36e_coco10_frozen.py"
 
 #train_data_root = '/media/data/dad/cnet/experiments/coco10novel/mix_n2000_o1_s1_p640_pfa_csl_p20_pfb_csl40'  # change this for different synthetic strategy
-train_data_root = "/media/data/dad/cnet/experiments/coco10s1_512p/mix_n1000-100_dfsNone_o0_m0_s1_HED_p512_imprior"
+train_data_root = "/media/data/dad/cnet/experiments/coco10s1_512p/mix_n3000-333_o0_m0_s1_HED_p512_imprior_avgacsl30"
 dataset_type = 'CocoDataset'
 
 train_pipeline = [

@@ -1,8 +1,16 @@
-_base_ = "./dino-5scale_swin-l_36e_coco5_frozen.py"
+_base_ = "./dino-4scale_r50_36e_coco10_frozen4.py"
 
 #train_data_root = '/media/data/dad/cnet/experiments/coco10novel/mix_n2000_o1_s1_p640_pfa_csl_p20_pfb_csl40'  # change this for different synthetic strategy
-train_data_root = "/media/data/dad/cnet/experiments/coco5s1_512p/mix_n167-167_dfsNone_o0_m0_s1_canny_p512_promptand_imprior_avgacsl30"
+train_data_root = "/media/data/dad/cnet/experiments/coco30s1_512p/mix_n2500-1000_dfsNone_o0_m0_s1_HED_p512_imprior_avgacsl30"
 dataset_type = 'CocoDataset'
+
+model = dict(
+    backbone=dict(
+        frozen_stages=4,),  # TODO
+    bbox_head=dict(
+        num_classes=20,  # TODO: change this in configs for novel train
+        ),
+    )
 
 train_dataloader = dict(
     dataset=dict(
@@ -25,7 +33,7 @@ optim_wrapper = dict(
 )  # custom_keys contains sampling_offsets and reference_points in DeformDETR  # noqa
 
 # learning policy
-max_epochs = 100
+max_epochs = 36
 train_cfg = dict(
     type='EpochBasedTrainLoop', max_epochs=max_epochs, val_interval=max_epochs)
 
@@ -49,3 +57,5 @@ auto_scale_lr = dict(base_batch_size=16)
 
 default_hooks = dict(
     checkpoint=dict(type='CheckpointHook', interval=max_epochs),)
+
+load_from = '/home/ubuntu/mmdetection/work_dirs/dino-4scale_r50_36e_coco_base60/epoch_36.pth'

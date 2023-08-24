@@ -2,7 +2,7 @@ _base_ = './yolox_s_100e_coco10_frozen4.py'
 
 #train_data_root = '/media/data/dad/cnet/experiments/coco10novel/mix_n2000_o1_s1_p640_pfa_csl_p20_pfb_csl40'  # change this for different synthetic strategy
 #train_data_root = "/media/data/dad/cnet/experiments/coco10s1_512p/mix_n2000_o1_s1_p512_pfa_csl_p20_pfb_csl20"
-train_data_root = "/media/data/dad/cnet/experiments/coco10s1_512p/mix_n100-100_dfsNone_o0_m0_s1_HED_p512_promptmix_imprior_resizefixed"
+train_data_root = "/media/data/dad/cnet/experiments/coco10s1_512p/mix_n333-333_dfsNone_o0_m0_s1_HED_p512_promptcat_seed1_noprompt_imprior_avgacsl30"
 dataset_type = 'CocoDataset'
 
 train_dataset = dict(
