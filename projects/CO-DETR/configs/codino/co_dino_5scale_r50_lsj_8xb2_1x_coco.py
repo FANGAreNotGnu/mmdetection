@@ -6,7 +6,7 @@ custom_imports = dict(
 # model settings
 num_dec_layer = 6
 loss_lambda = 2.0
-num_classes = 80
+num_classes = 151
 
 image_size = (1024, 1024)
 batch_augments = [
